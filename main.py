@@ -23,10 +23,6 @@ class SubmitRequest(BaseModel):
     advice: str  # 사용자의 용도(예: '게이밍', '사무용')
     money: str   # 최대 예산 (문자열로 입력받음)
 
-class SubmitResponse(BaseModel):
-    recommendation1: dict
-    recommendation2: dict
-    recommendation3: dict
 
 # PC 데이터 JSON 파일 읽기
 try:
@@ -80,7 +76,7 @@ async def get_recommendation(purpose: str, max_price: int):
     )
     return response.choices[0].message.content.strip()
 
-@app.post("/submit", response_model=SubmitResponse)
+@app.post("/submit")
 async def submit_advice(data: SubmitRequest):
     if not data.advice.strip():
         raise HTTPException(status_code=400, detail="advice is required")
