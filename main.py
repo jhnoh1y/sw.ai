@@ -17,7 +17,8 @@ app.add_middleware(
 )
 
 # 환경변수에서 API 키 읽기 (환경변수 설정 필요)
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = "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"  # 환경변수에 API 키 설정
+
 
 class SubmitRequest(BaseModel):
     advice: str  # 사용자의 용도(예: '게이밍', '사무용')
