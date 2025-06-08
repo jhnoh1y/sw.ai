@@ -1,14 +1,5 @@
 import os
 import json
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
-import openai
-
-
-
-import os
-import json
 import urllib.parse
 import requests
 from bs4 import BeautifulSoup
@@ -51,12 +42,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 환경변수에서 API 키 읽기 (환경변수 설정 필요)
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key =  os.getenv("OPENAI_API_KEY")
 
 class SubmitRequest(BaseModel):
-    advice: str  # 사용자의 용도(예: '게이밍', '사무용')
-    money: str   # 최대 예산 (문자열로 입력받음)
+    advice: str
+    money: str
+
 
 
 # PC 데이터 JSON 파일 읽기
@@ -68,12 +59,10 @@ except Exception as e:
     pc_list = []
 
 def filter_pcs(purpose: str, max_price: int):
-    # 목적에 따른 간단 필터링 (용도 필드가 있을 경우)
     filtered = [
         pc for pc in pc_list
         if int(pc.get("가격", 0)) <= max_price and purpose.lower() in pc.get("용도", "").lower()
     ]
-    # 용도 기준 필터링 결과가 없으면 가격 기준만 필터링
     if not filtered:
         filtered = [pc for pc in pc_list if int(pc.get("가격", 0)) <= max_price]
     return filtered
@@ -132,5 +121,6 @@ async def submit_advice(data: SubmitRequest):
             raise ValueError("잘못된 추천 데이터 형식")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI 추천 데이터 파싱 실패: {str(e)}")
+    print(recommendations)
 
     return recommendations
