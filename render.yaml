@@ -5,5 +5,6 @@ services:
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn main:app --host 0.0.0.0 --port 10000"
     envVars:
-      - key: "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"
-        sync: false  # Render 대시보드에서 직접 입력하도록 유도
+      - key: OPENAI_API_KEY
+        value: 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
+        sync: false
