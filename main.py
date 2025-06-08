@@ -99,8 +99,4 @@ async def submit_advice(data: SubmitRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI 추천 데이터 파싱 실패: {str(e)}")
 
-    return {
-        "recommendation1": recommendations[0],
-        "recommendation2": recommendations[1],
-        "recommendation3": recommendations[2]
-    }
+    return recommendations
