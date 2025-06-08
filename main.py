@@ -5,6 +5,41 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import openai
 
+
+
+import os
+import json
+import urllib.parse
+import requests
+from bs4 import BeautifulSoup
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+import openai
+
+def get_first_product_image(model_name: str) -> str:
+    query = urllib.parse.quote(model_name)
+    search_url = f"https://search.danawa.com/dsearch.php?query={query}"
+
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+
+    try:
+        res = requests.get(search_url, headers=headers, timeout=10)
+        res.raise_for_status()
+        soup = BeautifulSoup(res.text, "html.parser")
+        img_tag = soup.select_one("div.thumb_image img")
+        if img_tag:
+            src = img_tag.get("data-original") or img_tag.get("src")
+            if src and src.startswith("//"):
+                src = "https:" + src
+            return src or ""
+        return ""
+    except Exception as e:
+        print(f"[이미지 로드 실패] {model_name}: {e}")
+        return ""
+
 app = FastAPI()
 
 # CORS 설정
@@ -90,6 +125,9 @@ async def submit_advice(data: SubmitRequest):
 
     try:
         recommendations = json.loads(result_text)
+        for a in range(3):
+            url = get_first_product_image(recommendations[a].get("이름").split(":")[-1])
+            recommendations[a]["image"] = url
         if not isinstance(recommendations, list) or len(recommendations) != 3:
             raise ValueError("잘못된 추천 데이터 형식")
     except Exception as e:
