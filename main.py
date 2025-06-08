@@ -69,7 +69,7 @@ output form :[
 async def get_recommendation(purpose: str, max_price: int):
     filtered = filter_pcs(purpose, max_price)
     prompt = create_prompt(filtered, purpose)
-    response = await openai.chat.completions.create(
+    response = openai.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "You are a helpful assistant specializing in computer recommendations."},
